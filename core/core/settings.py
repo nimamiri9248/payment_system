@@ -44,9 +44,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_spectacular',
     'rest_framework_simplejwt.token_blacklist',
+    'storages',
     
     # apps
     'accounts',
+    'products',
 ]
 
 MIDDLEWARE = [
@@ -150,3 +152,16 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+AWS_S3_ENDPOINT_URL = 'http://localhost:9000' 
+AWS_ACCESS_KEY_ID = 'yLCMnXS7oGv1YYeINtFGOrhDeTSLz9zkaEuJVEOC'
+AWS_SECRET_ACCESS_KEY = 'rX92mc5FbtevSgT2ieox'
+AWS_STORAGE_BUCKET_NAME = 'payment-system'
+AWS_S3_REGION_NAME = '' 
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None  
