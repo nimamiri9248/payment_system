@@ -22,10 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1g+r**3#kd!i%r0-#8(w1u3tj5_y$tat%sldl&9j_a@no%o77r'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-1g+r**3#kd!i%r0-#8(w1u3tj5_y$tat%sldl&9j_a@no%o77r')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", True)
 
 ALLOWED_HOSTS = []
 
@@ -164,14 +164,14 @@ STORAGES = {
 }
 
 
-AWS_S3_ENDPOINT_URL = 'http://localhost:9000' 
-AWS_ACCESS_KEY_ID = '9L2wCNceMbH8HobgUgqN'
-AWS_SECRET_ACCESS_KEY = 'AFy4VdVVRifZQOLqKKwpA3pnjPhVv7YvcqJ3M0Hf'
-AWS_STORAGE_BUCKET_NAME = 'payment-system'
-AWS_S3_REGION_NAME = '' 
-AWS_S3_SIGNATURE_VERSION = 's3v4'
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None  
+AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL', 'http://localhost:9000')
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', '9L2wCNceMbH8HobgUgqN')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', 'AFy4VdVVRifZQOLqKKwpA3pnjPhVv7YvcqJ3M0Hf')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'payment-system')
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', '')
+AWS_S3_SIGNATURE_VERSION = os.getenv('AWS_S3_SIGNATURE_VERSION', 's3v4')
+AWS_S3_FILE_OVERWRITE = os.getenv('AWS_S3_FILE_OVERWRITE', 'False') == 'True'
+AWS_DEFAULT_ACL = os.getenv('AWS_DEFAULT_ACL', None)
 
 
 MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'
@@ -183,7 +183,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [(os.getenv("REDIS_HOST","127.0.0.1"), os.getenv("REDIS_PORT",6379))],
         },
     },
 }
