@@ -13,9 +13,10 @@ class InvoiceListCreateView(APIView):
 
     def get(self, request):
         if request.user.is_staff:
-            invoices = Invoice.objects.all()
+            invoices = Invoice.objects.prefetch_related('products').all()
         else:
-            invoices = Invoice.objects.filter(user=request.user)
+            invoices = Invoice.objects.filter(user=request.user).prefetch_related('products')
+
         serializer = self.serializer_class(invoices, many=True, context={'request': request})
         return Response(
             {
@@ -47,8 +48,10 @@ class InvoiceListCreateView(APIView):
 class InvoiceDetailView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
     serializer_class = InvoiceSerializer
+
     def get_object(self, pk):
-        return get_object_or_404(Invoice, pk=pk)
+        queryset = Invoice.objects.prefetch_related('products')
+        return get_object_or_404(queryset, pk=pk)
     
     def get(self, request, pk):
         invoice = self.get_object(pk)
