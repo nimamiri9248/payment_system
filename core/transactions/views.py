@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.shortcuts import get_object_or_404
-
+from drf_spectacular.utils import extend_schema
 from .models import Transaction
 from .serializers import TransactionCreateSerializer, TransactionListSerializer, TransactionStatusUpdateSerializer
 
@@ -39,7 +39,9 @@ class TransactionListView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = TransactionListSerializer
-
+    @extend_schema(
+        operation_id="transactionListGet"
+    )
     def get(self, request):
         user = request.user
         if user.is_staff:
@@ -70,6 +72,9 @@ class TransactionDetailView(APIView):
             return None 
         return transaction
 
+    @extend_schema(
+        operation_id="transactionGet"
+    )
     def get(self, request, pk):
         transaction = self.get_object(pk, request.user)
         if not transaction:

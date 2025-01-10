@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -59,15 +60,14 @@ class TransactionTests(APITestCase):
     def test_admin_create_transaction_for_any_invoice(self):
         url = reverse('transaction-create')
         data = {
-            "invoice": self.invoice2.id,
-            "amount": "15.00"
+            "invoice": self.invoice2.id
         }
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.admin_access)
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['message'], "Transaction registered successfully.")
-        self.assertEqual(response.data['result']['amount'], "15.00")
+        self.assertEqual(Decimal(response.data['result']['amount']), self.invoice2.total_amount)
         self.assertEqual(response.data['result']['invoice_id'], self.invoice2.id)
 
     def test_view_own_transaction_history(self):

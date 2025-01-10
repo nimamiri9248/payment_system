@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.shortcuts import get_object_or_404
-
+from drf_spectacular.utils import extend_schema
 from .models import Invoice
 from .serializers import InvoiceSerializer
 from .permissions import IsOwnerOrAdmin
@@ -10,7 +10,9 @@ from .permissions import IsOwnerOrAdmin
 class InvoiceListCreateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = InvoiceSerializer
-
+    @extend_schema(
+        operation_id="invoiceListGet"
+    )
     def get(self, request):
         if request.user.is_staff:
             invoices = Invoice.objects.prefetch_related('products').all()
@@ -53,6 +55,9 @@ class InvoiceDetailView(APIView):
         queryset = Invoice.objects.prefetch_related('products')
         return get_object_or_404(queryset, pk=pk)
     
+    @extend_schema(
+        operation_id="invoiceGet"
+    )
     def get(self, request, pk):
         invoice = self.get_object(pk)
         self.check_object_permissions(request, invoice)

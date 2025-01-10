@@ -1,6 +1,8 @@
+from decimal import Decimal
 from django.db import models
 from django.conf import settings
 from products.models import Product
+from django.core.validators import MinValueValidator
 
 class Invoice(models.Model):
     STATUS_CHOICES = [
@@ -15,7 +17,7 @@ class Invoice(models.Model):
         related_name='invoices'
     )
     products = models.ManyToManyField(Product, related_name='invoices')
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, validators=[MinValueValidator(Decimal('0.00'))])
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,

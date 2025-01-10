@@ -36,7 +36,7 @@ class InvoicesTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn('message', response.data)
         self.assertIn('result', response.data)
-        self.assertTrue(len(response.data['result']['products']) == 2)
+        self.assertTrue(len(response.data['result']['products_info']) == 2)
 
     def test_invoice_list_user(self):
         """

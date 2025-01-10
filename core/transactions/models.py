@@ -1,5 +1,7 @@
+from decimal import Decimal
 from django.db import models
 from invoices.models import Invoice
+from django.core.validators import MinValueValidator
 
 class Transaction(models.Model):
     STATUS_CHOICES = [
@@ -13,7 +15,7 @@ class Transaction(models.Model):
         on_delete=models.CASCADE,
         related_name='transactions'
     )
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.00'))])
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,

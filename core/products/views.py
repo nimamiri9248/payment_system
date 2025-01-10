@@ -4,6 +4,7 @@ from rest_framework import status
 from .models import Product
 from .serializers import ProductSerializer
 from .permissions import IsAdminOrReadOnly
+from drf_spectacular.utils import extend_schema
 
 class ProductListCreateView(APIView):
     """
@@ -12,7 +13,10 @@ class ProductListCreateView(APIView):
     """
     permission_classes = [IsAdminOrReadOnly]
     serializer_class = ProductSerializer
-
+    
+    @extend_schema(
+        operation_id="productsListGet"
+    )
     def get(self, request):
         products = Product.objects.all()
         serializer = self.serializer_class(products, many=True, context={'request': request})
@@ -59,6 +63,9 @@ class ProductDetailView(APIView):
         except Product.DoesNotExist:
             return None
 
+    @extend_schema(
+        operation_id="productGet"
+    )
     def get(self, request, pk):
         product = self.get_object(pk)
         if not product:
