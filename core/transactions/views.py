@@ -4,7 +4,7 @@ from rest_framework import status, permissions
 from django.shortcuts import get_object_or_404
 
 from .models import Transaction
-from .serializers import TransactionCreateSerializer, TransactionListSerializer
+from .serializers import TransactionCreateSerializer, TransactionListSerializer, TransactionStatusUpdateSerializer
 
 class TransactionCreateView(APIView):
     """
@@ -62,7 +62,7 @@ class TransactionDetailView(APIView):
     PATCH: Partial update of a transaction.
     """
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = TransactionListSerializer
+    serializer_class = TransactionStatusUpdateSerializer
 
     def get_object(self, pk, user):
         transaction = get_object_or_404(Transaction, pk=pk)
@@ -78,7 +78,7 @@ class TransactionDetailView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        serializer = self.serializer_class(transaction)
+        serializer = TransactionListSerializer(transaction)
         return Response(
             {
                 "message": "Transaction retrieved successfully.",
@@ -87,39 +87,10 @@ class TransactionDetailView(APIView):
             status=status.HTTP_200_OK
         )
 
-    def put(self, request, pk):
-        """
-        Full update: expects all required fields for TransactionCreateSerializer.
-        """
-        transaction = self.get_object(pk, request.user)
-        if not transaction:
-            return Response(
-                {"message": "You do not have permission to update this transaction.", "result": {}},
-                status=status.HTTP_403_FORBIDDEN
-            )
-
-        serializer = TransactionCreateSerializer(transaction, data=request.data, context={'request': request})
-        if serializer.is_valid():
-            transaction = serializer.save()
-            response_serializer = self.serializer_class(transaction)
-            return Response(
-                {
-                    "message": "Transaction updated successfully (full).",
-                    "result": response_serializer.data
-                },
-                status=status.HTTP_200_OK
-            )
-        return Response(
-            {
-                "message": "Validation error.",
-                "result": serializer.errors
-            },
-            status=status.HTTP_400_BAD_REQUEST
-        )
 
     def patch(self, request, pk):
         """
-        Partial update: only the fields in request.data will be updated.
+        Partial update: only the status field will be updated.
         """
         transaction = self.get_object(pk, request.user)
         if not transaction:
@@ -128,7 +99,7 @@ class TransactionDetailView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        serializer = TransactionCreateSerializer(
+        serializer = self.serializer_class(
             transaction,
             data=request.data,
             partial=True,
@@ -136,7 +107,7 @@ class TransactionDetailView(APIView):
         )
         if serializer.is_valid():
             transaction = serializer.save()
-            response_serializer = self.serializer_class(transaction)
+            response_serializer = TransactionListSerializer(transaction)
             return Response(
                 {
                     "message": "Transaction updated successfully (partial).",
@@ -151,3 +122,4 @@ class TransactionDetailView(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
+
