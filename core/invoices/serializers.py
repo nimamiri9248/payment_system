@@ -26,7 +26,7 @@ class InvoiceSerializer(serializers.Serializer):
 
         return data
 
-    def get_products_info(self, instance):
+    def get_products_info(self, instance) -> ProductSerializer:
         serializer = ProductSerializer(instance.products.all(), many=True)
         return serializer.data
 
