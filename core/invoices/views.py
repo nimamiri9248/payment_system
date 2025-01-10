@@ -62,3 +62,56 @@ class InvoiceDetailView(APIView):
             status=status.HTTP_200_OK
         )
     
+    def put(self, request, pk):
+        invoice = self.get_object(pk)
+        self.check_object_permissions(request, invoice)
+        serializer = self.serializer_class(invoice, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            invoice = serializer.save()
+            return Response(
+                {
+                    "message": "Invoice updated successfully.",
+                    "result": self.serializer_class(invoice, context={'request': request}).data
+                },
+                status=status.HTTP_200_OK
+            )
+        return Response(
+            {
+                "message": "Validation error.",
+                "result": serializer.errors
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    def patch(self, request, pk):
+        invoice = self.get_object(pk)
+        self.check_object_permissions(request, invoice)
+        serializer = self.serializer_class(invoice, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            invoice = serializer.save()
+            return Response(
+                {
+                    "message": "Invoice updated successfully.",
+                    "result": self.serializer_class(invoice, context={'request': request}).data
+                },
+                status=status.HTTP_200_OK
+            )
+        return Response(
+            {
+                "message": "Validation error.",
+                "result": serializer.errors
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    def delete(self, request, pk):
+        invoice = self.get_object(pk)
+        self.check_object_permissions(request, invoice)
+        invoice.delete()
+        return Response(
+            {
+                "message": "Invoice deleted successfully.",
+                "result": {}
+            },
+            status=status.HTTP_204_NO_CONTENT
+        )
